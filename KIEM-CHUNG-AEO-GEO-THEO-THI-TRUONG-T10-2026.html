@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiểm chứng AEO và GEO Silverland theo thị trường</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --h6:#7b6a9a; --h7:#a3a9b1;
+  --bg:#f6f4ef; --paper:#ffffff; --ink:#1b2430; --ink-2:#4a5563; --muted:#6b7380; --line:#e3ded3;
+  --accent:#b8561b; --accent-soft:#f6e6da; --good:#1f7a4d; --good-soft:#e2f2e8; --warn:#9a6a00; --warn-soft:#fbf0d4;
+  --bad:#b0322b; --bad-soft:#f8e1df; --navy:#1f3a5a; --chart-2:#8aa1b8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12161c; --paper:#1a2029; --ink:#eef1f5; --ink-2:#c4cbd5; --muted:#98a2b0; --line:#2c3440;
+    --h6:#a996c9; --h7:#7d8591; --accent:#e38a4f; --accent-soft:#3a2a1f; --good:#5fc28f; --good-soft:#1c3328; --warn:#e3b44f; --warn-soft:#3a3120;
+    --bad:#ef7d74; --bad-soft:#3d2422; --navy:#9fbad8; --chart-2:#5d7189;
+  }
+}
+:root[data-theme="dark"]{
+    --bg:#12161c; --paper:#1a2029; --ink:#eef1f5; --ink-2:#c4cbd5; --muted:#98a2b0; --line:#2c3440;
+    --h6:#a996c9; --h7:#7d8591; --accent:#e38a4f; --accent-soft:#3a2a1f; --good:#5fc28f; --good-soft:#1c3328; --warn:#e3b44f; --warn-soft:#3a3120;
+    --bad:#ef7d74; --bad-soft:#3d2422; --navy:#9fbad8; --chart-2:#5d7189;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Be Vietnam Pro",system-ui,sans-serif;font-size:15.5px;line-height:1.6}
+.wrap{max-width:1440px;margin:0 auto;padding:32px clamp(16px,3vw,56px) 64px}
+html{scroll-behavior:smooth}
+h2,[id]{scroll-margin-top:16px}
+header{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:28px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.headrow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.toc{background:var(--paper);border:1px solid var(--line);padding:20px 24px;margin-bottom:28px}
+.toc h2{margin:0 0 4px;font-size:20px}
+.toc ol{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));column-gap:28px}
+.toc li{border-top:1px solid var(--line);padding:9px 0;display:grid;grid-template-columns:34px 1fr;gap:4px}
+.toc .tn{font-family:"Source Serif 4",serif;font-weight:700;color:var(--accent);font-size:18px;line-height:1.3}
+.toc a{color:var(--ink);font-weight:600;text-decoration:none}
+.toc a:hover,.toc a:focus-visible{color:var(--accent);text-decoration:underline}
+.toc .tq{display:block;font-size:13px;color:var(--muted)}
+.toc .sub-links{display:block;font-size:13px;margin-top:2px}
+.toc .sub-links a{font-weight:500;color:var(--navy)}
+.toc .step{font-size:13px;color:var(--ink-2);margin:0}
+h2.first{margin-top:0}
+.back{font-size:12.5px;margin-left:10px;font-family:"Be Vietnam Pro";font-weight:500;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--accent)}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(26px,3vw,42px);line-height:1.2;margin:6px 0 8px;max-width:1200px}
+h2{font-family:"Source Serif 4",Georgia,serif;font-size:24px;margin:44px 0 6px}
+h3{font-size:16px;margin:0 0 6px}
+.sub{color:var(--ink-2);margin:0}
+.meta{font-size:13px;color:var(--muted);text-align:left;margin-top:10px}
+button.theme{white-space:nowrap;flex-shrink:0;background:none;border:1px solid var(--line);color:var(--ink-2);padding:6px 12px;border-radius:4px;cursor:pointer;font:inherit;font-size:13px}
+button.theme:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.verdict{background:var(--paper);border-left:6px solid var(--accent);padding:22px 26px;display:grid;grid-template-columns:minmax(160px,220px) 1fr;gap:24px;align-items:start}
+.verdict .stamp{font-family:"Source Serif 4",serif;font-size:30px;font-weight:700;color:var(--accent);line-height:1.1}
+.verdict .stamp small{display:block;font-family:"Be Vietnam Pro";font-size:13px;color:var(--muted);font-weight:500;margin-top:6px}
+.verdict p{margin:0 0 10px}
+.verdict p.closing{margin:0;padding-top:12px;border-top:1px solid var(--line);font-weight:500}
+@media (max-width:700px){.verdict{grid-template-columns:1fr}}
+.kpis{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px;margin-top:22px}
+.kpis .k{background:var(--paper);border:1px solid var(--line);padding:18px 20px}
+.kpis .k.hero{grid-row:span 2;border-top:4px solid var(--good)}
+.k .lbl{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.k .num{font-variant-numeric:tabular-nums;font-weight:700;font-size:30px;line-height:1.15;margin:6px 0}
+.k.hero .num{font-size:54px;color:var(--good)}
+.mini-head{font-size:12.5px;font-weight:600;color:var(--ink-2);margin-top:16px}
+.mini-box{position:relative;height:170px;margin-top:6px}
+.growth{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:13px;margin-top:8px;color:var(--ink-2)}
+.growth .g-note{flex-basis:100%;font-size:12.5px;color:var(--muted)}
+h3.subh{font-family:"Source Serif 4",Georgia,serif;font-size:19px;margin:30px 0 4px}
+.hotel-grid{display:grid;grid-template-columns:minmax(300px,5fr) 7fr;gap:16px;margin-top:14px;align-items:start}
+.hotel-grid>*{min-width:0}
+.hotel-grid .tbl-wrap{margin-top:0}
+.hotel-grid table{min-width:620px}
+tr.total td,tr.total th{font-weight:700;background:var(--bg)}
+td.pos{color:var(--good);font-weight:600} td.neg{color:var(--bad);font-weight:600}
+.notes{margin:14px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.notes li{padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+@media (max-width:900px){.hotel-grid{grid-template-columns:1fr}}
+.k .note{font-size:13.5px;color:var(--ink-2)}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:3px;font-variant-numeric:tabular-nums}
+.chip.up{background:var(--good-soft);color:var(--good)} .chip.down{background:var(--bad-soft);color:var(--bad)} .chip.flat{background:var(--warn-soft);color:var(--warn)}
+@media (max-width:820px){.kpis{grid-template-columns:1fr 1fr}.kpis .k.hero{grid-column:span 2;grid-row:auto}}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;padding:1px 7px;border-radius:2px;vertical-align:middle;margin-right:6px;text-transform:uppercase}
+.tag.v{background:var(--good-soft);color:var(--good)} .tag.i{background:var(--warn-soft);color:var(--warn)}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-top:14px}
+.panel{background:var(--paper);border:1px solid var(--line);padding:18px}
+.panel .q{font-weight:600;margin-bottom:2px}
+.panel .a{font-size:13.5px;color:var(--ink-2);margin-bottom:10px}
+.canvas-box{position:relative;height:280px}
+.tbl-wrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);margin-top:14px}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:14px}
+th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bg);font-weight:700}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.v-ok{color:var(--good);font-weight:700}.v-mid{color:var(--warn);font-weight:700}.v-no{color:var(--bad);font-weight:700}
+.reasons{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0;border-top:1px solid var(--line);margin-top:14px}
+.reasons div{padding:16px 18px 16px 0;border-bottom:1px solid var(--line)}
+.reasons .no{font-family:"Source Serif 4",serif;color:var(--accent);font-size:22px;font-weight:700;margin-right:8px}
+.plan{margin-top:14px}
+.phase{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:20px 0;border-top:1px solid var(--line)}
+.phase .when{font-weight:700;color:var(--navy)}
+.phase .when small{display:block;color:var(--muted);font-weight:500}
+.act{background:var(--paper);border:1px solid var(--line);padding:16px 18px;margin-bottom:12px}
+.act .owner{font-size:12.5px;color:var(--muted)}
+.ex{background:var(--accent-soft);padding:12px 14px;margin-top:10px;font-size:14px}
+.ex b{color:var(--accent)}
+@media (max-width:700px){.phase{grid-template-columns:1fr;gap:8px}}
+.dont{background:var(--paper);border:1px dashed var(--bad);padding:16px 18px;margin-top:14px}
+footer{margin-top:48px;padding-top:16px;border-top:2px solid var(--ink);font-size:13px;color:var(--muted)}
+footer ol{padding-left:18px} footer a{color:var(--navy)}
+code{font-size:12.5px;background:var(--bg);padding:1px 5px;border-radius:3px;word-break:break-all}
+@media (min-width:900px){.toc ol{grid-template-columns:repeat(3,1fr)}}
+@media (min-width:900px) and (max-width:1399px){.reasons{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1400px){.reasons{grid-template-columns:repeat(4,1fr)}}
+.reasons div{padding-right:22px}
+.phase>div:last-child{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;align-items:start}
+.phase .act{margin-bottom:0;height:100%}
+@media (max-width:700px){.phase>div:last-child{grid-template-columns:1fr}}
+details.ex{padding:0;background:none;margin-top:10px}
+details.ex>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--accent);padding:6px 10px;border:1px solid var(--accent-soft);background:var(--accent-soft);border-radius:3px}
+details.ex>summary::-webkit-details-marker{display:none}
+details.ex>summary::after{content:"▾";font-size:12px}
+details.ex[open]>summary::after{content:"▴"}
+details.ex>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+details.ex .ex-body{background:var(--accent-soft);padding:12px 14px;margin-top:6px;font-size:14px}
+.term{border-bottom:1.5px dotted var(--ink-2);cursor:help;text-decoration:none}
+.term:hover,.term:focus-visible{border-bottom-color:var(--accent);color:var(--accent);outline:none}
+.term-demo{border-bottom:1.5px dotted var(--ink-2)}
+#tip{position:fixed;z-index:60;max-width:340px;background:var(--ink);color:var(--paper);padding:10px 13px;font-size:13px;line-height:1.55;border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,.18);display:none;text-transform:none;letter-spacing:0;font-weight:400;text-align:left}
+#tip b{display:block;margin-bottom:3px;color:var(--accent-soft)}
+#glossary-table td:first-child{font-weight:600;white-space:normal}
+@media print{#tip{display:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="topbar">
+    <div class="eyebrow">Silverland Hotels · Kiểm chứng nhận định nội bộ</div>
+    <button class="theme" id="themeBtn" type="button" aria-label="Đổi chế độ sáng tối">Sáng / Tối</button>
+  </div>
+  <div class="headrow">
+  <div>
+    <h1>"AEO và GEO đang phát huy rất tốt ở Mỹ, Úc, Singapore, Nhật, Việt Nam": Nhận định này có chính xác không?</h1>
+    <p class="sub">Dữ liệu sử dụng: số lần AI nhắc tên Silverland, đo bằng <span class="term" data-k="semrush">Semrush AI Visibility</span> (T7 đến T9/2026); lượt truy cập và doanh thu website từ <span class="term" data-k="ga4">GA4</span> (1/7 đến 26/10/2026); kết quả kiểm tra nội bộ ngày 06/10/2026, trong đó team đặt 66 câu hỏi cho công cụ AI và chấm đúng sai từng câu trả lời; số liệu do Booking Holdings, Lighthouse, Adobe công bố, dùng làm mốc so sánh.</p>
+  </div>
+  <div class="meta">Cập nhật 27/10/2026<br>T10 tính đến hết ngày 26/10</div>
+  </div>
+</header>
+
+<nav class="toc" id="muc-luc" aria-label="Mục lục">
+  <h2>Mục lục</h2>
+  <ol>
+    <li><span class="tn">1</span><span><a href="#ket-luan">Kết luận</a><span class="tq">Mức độ chính xác của nhận định và kết luận chung</span></span></li>
+    <li><span class="tn">2</span><span><a href="#so-chinh">Năm chỉ số chính</a><span class="tq">Doanh thu, phiên, lượt nhắc tên, tỷ lệ nói đúng, tiến độ</span><span class="sub-links"><a href="#theo-khach-san">2.1 Doanh thu kênh AI theo khách sạn</a></span></span></li>
+    <li><span class="tn">3</span><span><a href="#thi-truong">Đánh giá từng thị trường</a><span class="tq">Mỹ, Úc, Singapore, Nhật, Việt Nam: thị trường nào đạt</span></span></li>
+    <li><span class="tn">4</span><span><a href="#xac-nhan">Phần được dữ liệu xác nhận</a><span class="tq">Kênh AI của Silverland so với số liệu công bố của ngành</span></span></li>
+    <li><span class="tn">5</span><span><a href="#ly-do">Phần chưa được dữ liệu xác nhận</a><span class="tq">7 lý do, phân tách số liệu kiểm chứng và suy luận</span></span></li>
+    <li><span class="tn">6</span><span><a href="#viec-can-lam">Kế hoạch hành động</a><span class="tq">Xếp theo tác động doanh thu so với nguồn lực</span><span class="sub-links"><a href="#gd-1">6.1 Tháng 11</a> · <a href="#gd-2">6.2 Tháng 11 đến 12</a> · <a href="#gd-3">6.3 Quý 1/2027</a> · <a href="#khong-nen">6.4 Không thực hiện</a></span></span></li>
+    <li><span class="tn">7</span><span><a href="#chi-tieu">Mục tiêu đề xuất đến 31/03/2027</a><span class="tq">Mục tiêu đề xuất cho từng chỉ số và nguồn đo</span></span></li>
+    <li><span class="tn">8</span><span><a href="#thuat-ngu">Giải thích thuật ngữ</a><span class="tq">Định nghĩa các chỉ số và thuật ngữ dùng trong báo cáo</span></span></li>
+    <li><span class="tn">9</span><span><a href="#nguon">Nguồn dữ liệu và giới hạn</a><span class="tq">Dữ liệu nội bộ, nguồn ngành, các điểm cần lưu ý</span></span></li>
+  </ol>
+</nav>
+
+<h2 class="first" id="ket-luan">1. Kết luận <a class="back" href="#muc-luc">Về mục lục ↑</a></h2>
+
+<section class="verdict" aria-label="Kết luận" style="margin-top:12px">
+  <div class="stamp">Đúng một phần<small>Đúng ở cấp kênh, chưa đúng ở cấp thị trường</small></div>
+  <div>
+    <p><b>Phần đúng:</b> <span class="term" data-k="aichannel">kênh AI</span> tăng trưởng liên tục và đã phát sinh booking. Trong 26 ngày đầu T10, kênh AI ghi nhận 13 booking, 153,7 triệu đồng, mức cao nhất kể từ T7. Tỷ trọng doanh thu từ kênh AI cao hơn mức chung của ngành (Booking Holdings công bố <span class="term" data-k="llm">LLM</span> chiếm dưới 1% <span class="term" data-k="roomnights">room nights</span>).</p>
+    <p><b>Phần chưa đúng:</b> chỉ <b>Úc</b> đạt cả ba tiêu chí (<span class="term" data-k="score">điểm hiển thị</span>, <span class="term" data-k="mention">lượt nhắc tên</span>, booking). <b>Mỹ</b> và <b>Việt Nam</b> có booking nhưng lượt nhắc tên thấp hơn La Siesta. <b>Singapore</b> giảm từ hạng 1 xuống hạng 4 về điểm hiển thị ở T9 và chưa có booking từ kênh AI trong T10. <b>Nhật</b> dẫn đầu nhóm nhưng khối lượng nhỏ, và Silverland không xuất hiện khi khách đặt câu hỏi bằng tiếng Nhật.</p>
+    <p class="closing"><b>Kết luận:</b> Kênh AI đang tăng trưởng và cao hơn mức chung của ngành. Silverland dẫn đầu <span class="term" data-k="group">nhóm so sánh</span> ở Úc. Mỹ và Việt Nam đã có booking nhưng độ phủ thấp hơn đối thủ. Singapore cần xác định nguyên nhân giảm hạng ở T9 trước khi push mạnh thêm. Nhật cần nội dung tiếng Nhật cho Sakyo và Sil, vì Silverland chưa xuất hiện khi khách hỏi bằng tiếng Nhật.</p>
+  </div>
+</section>
+
+<h2 id="so-chinh">2. Năm chỉ số chính <a class="back" href="#muc-luc">Về mục lục ↑</a></h2>
+<div class="kpis" style="margin-top:12px">
+  <div class="k hero">
+    <div class="lbl">Doanh thu từ <span class="term" data-k="aichannel">kênh AI</span>, 1 đến 26/10/2026</div>
+    <div class="num">153,7 tr</div>
+    <div class="note"><span class="chip up">▲ 139% so với T9</span> &nbsp;3,63% doanh thu website, cao nhất kể từ T7. 13 booking, chiếm 4,6% số booking website.</div>
+    <div class="mini-head">Doanh thu kênh AI theo tháng và tăng trưởng so với tháng trước</div>
+    <div class="mini-box"><canvas id="c0" aria-label="Doanh thu kênh AI theo tháng, T7 đến T10/2026, kèm tăng trưởng so với tháng trước"></canvas></div>
+    <div class="growth">
+      <span><b>T8</b> <span class="chip up">▲ 139%</span></span>
+      <span><b>T9</b> <span class="chip down">▼ 35%</span></span>
+      <span><b>T10</b> <span class="chip up">▲ 139%</span></span>
+      <span class="g-note">T10 mới tính 26 ngày. Quy đổi đủ 31 ngày theo tốc độ hiện tại khoảng 183 triệu (<span class="term" data-k="runrate">ước tính</span>).</span>
+    </div>
+  </div>
+  <div class="k">
+    <div class="lbl"><span class="term" data-k="session">Phiên</span> từ AI mỗi tháng</div>
+    <div class="num">501 → 1.381</div>
+    <div class="note"><span class="chip up">▲ 2,8 lần</span> T7 đến T10 (26 ngày)</div>
+  </div>
+  <div class="k">
+    <div class="lbl"><span class="term" data-k="mention">Lượt nhắc tên</span> Silverland (Semrush)</div>
+    <div class="num">887 → 823</div>
+    <div class="note"><span class="chip down">▼ 7,2%</span> T7 đến T9, cùng một lần trích xuất</div>
+  </div>
+  <div class="k">
+    <div class="lbl"><span class="term" data-k="accuracy">Tỷ lệ AI nói đúng</span> về Silverland</div>
+    <div class="num">67%</div>
+    <div class="note"><span class="chip flat">Mục tiêu 85%</span> 1/3 câu trả lời có lỗi thông tin, đo ngày 06/10</div>
+  </div>
+  <div class="k">
+    <div class="lbl">Tiến độ kế hoạch <span class="term" data-k="geo">GEO</span></div>
+    <div class="num">18 / 203</div>
+    <div class="note"><span class="chip down">8,9%</span> nhóm việc toàn hệ thống: 1 trên 40 hoàn thành. Nguồn: file Silverland-GEO New, tab Tiến độ</div>
+  </div>
+</div>
+
+<h3 class="subh" id="theo-khach-san">2.1 Doanh thu kênh AI theo khách sạn</h3>
+<p class="sub">Phần tăng của T10 đến từ Bến Thành và Yen. Bốn khách sạn còn lại giảm so với T9. Số liệu dùng <span class="term" data-k="itemrev">doanh thu theo phòng</span> trong GA4, đơn vị triệu đồng.</p>
+<div class="panel" style="margin-top:14px">
+  <div class="q">Khách sạn nào tạo ra doanh thu kênh AI mỗi tháng?</div>
+  <div class="a">Bến Thành chiếm 47% doanh thu kênh AI trong 4 tháng, Yen 17%, Mây 13%. Trong T10, Sakyo không phát sinh doanh thu từ kênh AI, Min chưa phát sinh booking từ kênh AI trong cả 4 tháng. Rê chuột hoặc chạm vào từng phần màu để xem chi tiết.</div>
+  <div class="canvas-box" style="height:440px"><canvas id="c3" aria-label="Doanh thu kênh AI theo khách sạn và theo tháng, biểu đồ cột chồng, T7 đến T10/2026"></canvas></div>
+  <div class="growth" style="margin-top:10px"><span class="g-note">Nguồn: GA4 property 340245620, kênh AI Assistant, 1/7 đến 26/10/2026, đơn vị triệu đồng. T10 tính 26 ngày. Số trên đầu cột là tổng doanh thu kênh AI của tháng.</span></div>
+</div>
+<ul class="notes">
+  <li><span class="tag v">Đã kiểm chứng</span><b>Mức tăng tập trung ở 2 khách sạn.</b> Bến Thành và Yen tăng tổng cộng 113,0 triệu so với T9. Mây, Jolie, Sakyo, Sil giảm tổng cộng 34,2 triệu. Min chưa phát sinh booking từ kênh AI trong 4 tháng.</li>
+  <li><span class="tag v">Đã kiểm chứng</span><b>Một booking giá trị lớn ảnh hưởng đáng kể đến số T10.</b> Một khách tại Canada đặt 2 phòng Sense City Double tại Bến Thành qua ChatGPT, trị giá 36,4 triệu, bằng 43% doanh thu kênh AI của Bến Thành và 27% tổng doanh thu kênh AI trong T10. Nếu loại trừ booking này, tổng T10 là 99,1 triệu, vẫn cao hơn T9 75%.</li>
+  <li><span class="tag v">Đã kiểm chứng</span><b>Nguồn booking T10.</b> 12 trên 13 booking đến từ ChatGPT, 1 booking đến từ Claude (Mây, khách tại Việt Nam). Gemini không phát sinh booking trong T10. Khách đặt từ Mỹ (5 booking), Úc (2), Nhật (2), Việt Nam (2), Canada (1), Ả Rập Xê Út (1).</li>
+  <li><span class="tag i">Suy luận</span><b>Kết quả theo khách sạn khớp với dữ liệu trang đích.</b> Bến Thành và Yen là 2 trang nhận nhiều phiên từ AI nhất (1.053 và 502 phiên trong 4 tháng). Sakyo có tỷ lệ chuyển đổi cao nhất nhưng T10 chưa phát sinh booking. Mỗi khách sạn chỉ bán 0 đến 7 phòng mỗi tháng qua kênh AI, nên cần xem chuỗi tối thiểu 3 tháng trước khi đánh giá xu hướng từng khách sạn.</li>
+</ul>
+
+<h2 id="thi-truong">3. Đánh giá từng thị trường <a class="back" href="#muc-luc">Về mục lục ↑</a></h2>
+<p class="sub">Ba tiêu chí độc lập. Điểm hiển thị và lượt nhắc tên lấy kỳ T9, kỳ cuối cùng dùng nhóm đối thủ cũ. Phiên và booking lấy từ GA4, nhận diện nguồn AI theo <span class="term" data-k="source">session source</span>.</p>
+<div class="tbl-wrap">
+<table>
+  <caption style="text-align:left;padding:10px 12px;font-size:13px;color:var(--muted)">Nguồn: Semrush AI Visibility T9/2026, GA4 1/7 đến 26/10/2026. Booking AI là giao dịch phát sinh trong phiên đến từ ChatGPT, Gemini, Perplexity, Copilot, Claude.</caption>
+  <thead><tr>
+    <th scope="col">Thị trường</th>
+    <th scope="col"><span class="term" data-k="score">Điểm hiển thị</span> T9</th>
+    <th scope="col"><span class="term" data-k="mention">Lượt nhắc tên</span> T9 so với đối thủ dẫn đầu</th>
+    <th scope="col"><span class="term" data-k="session">Phiên</span> AI T7 → T10</th>
+    <th scope="col"><span class="term" data-k="aibooking">Booking AI</span>, 4 tháng</th>
+    <th scope="col"><span class="term" data-k="mktshare">% doanh thu thị trường từ AI</span></th>
+    <th scope="col">Đánh giá</th>
+  </tr></thead>
+  <tbody>
+  <tr><th scope="row">Úc</th><td class="n">36, hạng 1<br><small>La Siesta 31</small></td><td class="n">120 so với 105<br><small>dẫn đầu</small></td><td class="n">60 → 197</td><td class="n">7 / 222<br><small>3,2%</small></td><td class="n">2,22%</td><td><span class="v-ok">Đúng.</span> Dẫn đầu cả điểm hiển thị và lượt nhắc tên. Booking giữ ở mức 1 đến 2 mỗi tháng trong khi phiên tăng 3,3 lần.</td></tr>
+  <tr><th scope="row">Mỹ</th><td class="n">34, hạng 1<br><small>Fusion Suites 32</small></td><td class="n">134 so với 227<br><small>thấp hơn La Siesta 1,7 lần</small></td><td class="n">76 → 210</td><td class="n">10 / 237<br><small>4,2%</small></td><td class="n">2,58%</td><td><span class="v-mid">Đúng một phần.</span> Doanh thu kênh AI cao nhất (100,5 triệu). Khoảng cách lượt nhắc tên với La Siesta tăng ở T9 (93 lượt, T7 và T8 là 73).</td></tr>
+  <tr><th scope="row">Việt Nam</th><td class="n">49, hạng 1<br><small>La Siesta 43</small></td><td class="n">289 so với 356<br><small>thấp hơn</small></td><td class="n">123 → 245</td><td class="n">4 / 72<br><small>5,6%</small></td><td class="n">6,09%<br><small>trên nền 497 triệu</small></td><td><span class="v-mid">Đúng một phần.</span> Tỷ trọng cao do doanh thu nền của thị trường thấp. Lượt nhắc tên thấp hơn La Siesta, khoảng cách giảm từ 131 (T7) xuống 67 (T9).</td></tr>
+  <tr><th scope="row">Nhật</th><td class="n">30, hạng 1<br><small>Liberty Central 28</small></td><td class="n">22 so với 8<br><small>dẫn đầu, khối lượng nhỏ</small></td><td class="n">49 → 182 → 88</td><td class="n">4 / 101<br><small>4,0%</small></td><td class="n">2,49%</td><td><span class="v-mid">Chưa đủ dữ liệu.</span> Khối lượng nhắc tên nhỏ, chưa đủ làm căn cứ. Ở <span class="term" data-k="red">tình huống S12</span> (câu hỏi bằng tiếng Nhật), Silverland không xuất hiện.</td></tr>
+  <tr><th scope="row">Singapore</th><td class="n">30, hạng 4<br><small>La Siesta 36</small></td><td class="n">26 so với 33<br><small>thấp hơn</small></td><td class="n">32 → 65</td><td class="n">2 / 149<br><small>1,3%</small></td><td class="n">0,74%</td><td><span class="v-no">Chưa đúng.</span> Giảm từ hạng 1 xuống hạng 4 ở T9, chưa phát sinh booking từ kênh AI trong T10, tỷ trọng thấp nhất trong 5 thị trường.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="charts">
+  <div class="panel">
+    <div class="q">Kênh AI có tăng trưởng qua các tháng không?</div>
+    <div class="a">Có. Phiên tăng liên tục từ T7 đến T10. Doanh thu giảm ở T9 và tăng lại ở T10. T10 mới tính 26 ngày.</div>
+    <div class="canvas-box"><canvas id="c1" aria-label="Phiên và doanh thu kênh AI theo tháng"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="q">Doanh thu kênh AI phân bổ theo thị trường như thế nào?</div>
+    <div class="a">Mỹ và Úc chiếm 48% doanh thu kênh AI. Singapore chiếm 4%.</div>
+    <div class="canvas-box"><canvas id="c2" aria-label="Doanh thu AI theo thị trường"></canvas></div>
+  </div>
+</div>
+
+<h2 id="xac-nhan">4. Phần được dữ liệu xác nhận: so sánh với mức chung của ngành <a class="back" href="#muc-luc">Về mục lục ↑</a></h2>
+<p class="sub">Căn cứ cho vế "kênh AI đang phát huy" trong nhận định.</p>
+<div class="tbl-wrap">
+<table style="min-width:720px">
+<thead><tr><th scope="col">Chỉ số</th><th scope="col">Silverland</th><th scope="col"><span class="term" data-k="benchmark">Mốc tham chiếu</span> công khai</th><th scope="col">Nhận xét</th></tr></thead>
+<tbody>
+<tr><td>Tỷ trọng phiên từ AI</td><td class="n">4,2% (T10, 1.381 / 33.215 phiên)</td><td>Khoảng 1% lượt truy cập website khách sạn độc lập (Lighthouse, 7/2026)</td><td><span class="tag i">Suy luận</span>Cao hơn mốc tham chiếu. Mẫu số có 5.347 phiên từ Trung Quốc trong T10 nhưng 0 booking, nhiều khả năng là bot. Nếu loại trừ, tỷ trọng kênh AI sẽ cao hơn.</td></tr>
+<tr><td>Tỷ trọng doanh thu từ AI</td><td class="n">3,63% (T10)</td><td>Dưới 1% room nights của Booking Holdings đến từ LLM (CFO, báo cáo kết quả Q2/2026)</td><td><span class="tag i">Suy luận</span>Hai mẫu số khác nhau (website khách sạn và <span class="term" data-k="ota">OTA</span> toàn cầu), chỉ dùng để tham khảo xu hướng. Tỷ trọng của Silverland cao hơn.</td></tr>
+<tr><td><span class="term" data-k="cvr">Tỷ lệ chuyển đổi</span> khách từ AI</td><td class="n">33 booking / 3.929 phiên = 0,84%</td><td>Adobe: chênh lệch chuyển đổi giữa khách từ AI và nguồn khác giảm từ -47% (7/2025) còn -14% (3/2026)</td><td><span class="tag i">Suy luận</span>Tỷ lệ chuyển đổi còn thấp. Cải thiện <span class="term" data-k="landing">trang đích</span> và <span class="term" data-k="ibe">booking engine</span> có thể tăng booking mà không cần tăng lưu lượng.</td></tr>
+</tbody></table>
+</div>
+
+<h2 id="ly-do">5. Phần chưa được dữ liệu xác nhận <a class="back" href="#muc-luc">Về mục lục ↑</a></h2>
+<p class="sub">Mỗi ý có nhãn: <span class="tag v">Đã kiểm chứng</span> là số liệu đọc trực tiếp từ nguồn, <span class="tag i">Suy luận</span> là nhận định rút ra từ các số liệu đó.</p>
+<div class="reasons">
+  <div><span class="no">1</span><span class="tag v">Đã kiểm chứng</span><b>Điểm hiển thị và lượt nhắc tên cho kết quả khác nhau.</b> Silverland dẫn đầu điểm hiển thị ở 4/5 thị trường nhưng chỉ dẫn đầu lượt nhắc tên ở 2/5 (Úc, Nhật). Tại Mỹ, Việt Nam, Singapore, La Siesta có điểm hiển thị thấp hơn nhưng lượt nhắc tên cao hơn trong cả ba kỳ T7 đến T9.</div>
+  <div><span class="no">2</span><span class="tag v">Đã kiểm chứng</span><b>Lượt nhắc tên giảm.</b> Từ 887 (T7) xuống 823 (T9), giảm 7,2%. Cùng kỳ, số <span class="term" data-k="citation">trích dẫn</span> tăng từ 604 lên 714. <span class="term" data-k="sov">Thị phần trong nhóm</span> tăng lên 31,8% do lượt nhắc tên của các đối thủ giảm nhiều hơn. Đây là cải thiện vị thế tương đối, chưa phải tăng trưởng tuyệt đối.</div>
+  <div><span class="no">3</span><span class="tag v">Đã kiểm chứng</span><b>Kết quả <span class="term" data-k="internal">kiểm tra nội bộ</span> thấp hơn Semrush.</b> Đường cơ sở 06/10: <span class="term" data-k="som">Share of Model</span> 10,9%, <span class="term" data-k="presence">tỷ lệ có mặt</span> 55%, tỷ lệ nói đúng 67%. Mây, Sil, Jolie, Yen chỉ xuất hiện 1 đến 4 trên 12 <span class="term" data-k="home">câu sân nhà</span>. Có 5 <span class="term" data-k="red">tình huống đỏ</span>, gồm khách công tác dài ngày và khách Nhật hỏi bằng tiếng Nhật.</div>
+  <div><span class="no">4</span><span class="tag v">Đã kiểm chứng</span> <span class="tag i">Suy luận</span><b>Số booking theo thị trường nhỏ.</b> Mỗi thị trường có 2 đến 10 booking trong 4 tháng. Một booking giá trị lớn hoặc một booking đoàn có thể thay đổi kết luận. GA4 ghi nhận vị trí truy cập, không phải quốc tịch: "Việt Nam" bao gồm cả khách nước ngoài đang ở Việt Nam.</div>
+  <div><span class="no">5</span><span class="tag v">Đã kiểm chứng</span><b>Giá trị booking từ kênh AI thấp hơn trung bình.</b> <span class="term" data-k="aov">Giá trị trung bình mỗi booking</span> từ kênh AI là 10,9 triệu, trung bình website là 13,8 triệu (16.354,6 triệu doanh thu trên 1.185 booking, 1/7 đến 26/10), thấp hơn 21%. Kênh AI chưa mang về nhiều booking hạng phòng cao hoặc lưu trú dài ngày.</div>
+  <div><span class="no">6</span><span class="tag i">Suy luận</span><b>Số liệu Semrush T10 cần đọc kèm nhóm đối thủ cũ.</b> Từ T10, nhóm so sánh thay đổi: bỏ La Siesta (đối thủ có lượt nhắc tên cao nhất tại Mỹ, Việt Nam, Singapore), thêm Kin và M-Village. Nếu số T10 cho thấy dẫn đầu 5/5, một phần là do thay đổi nhóm so sánh. Cần đọc song song nhóm cũ theo kế hoạch đã thống nhất.</div>
+  <div><span class="no">7</span><span class="tag v">Đã kiểm chứng</span> <span class="tag i">Suy luận</span><b>GA4 chưa ghi nhận đầy đủ tác động của AI.</b> Lượt click từ <span class="term" data-k="aio">AI Overview</span> và <span class="term" data-k="aimode">AI Mode</span> được GA4 tính vào <span class="term" data-k="organic">Organic</span>. Khách đọc ChatGPT rồi tự gõ tên khách sạn được tính vào <span class="term" data-k="direct">Direct</span> hoặc Organic. Vì vậy 3,63% nhiều khả năng là mức tối thiểu. Đây là cơ sở để tiếp tục đầu tư, nhưng không xác nhận mức đánh giá "rất tốt" cho từng thị trường.</div>
+</div>
+
+<h2 id="viec-can-lam">6. Kế hoạch hành động để tăng booking từ kênh AI <a class="back" href="#muc-luc">Về mục lục ↑</a></h2>
+<p class="sub">Thứ tự ưu tiên dựa trên tác động doanh thu so với nguồn lực cần bỏ ra. Quy trình gồm ba bước: AI <b>nhắc đúng thông tin</b>, AI <b>dẫn khách về website</b>, website <b>chuyển đổi thành booking</b>. Bước thứ ba hiện có tỷ lệ thất thoát cao nhất và chi phí khắc phục thấp nhất.</p>
+
+<div class="plan">
+<div class="phase" id="gd-1">
+  <div class="when">6.1 · Tháng 11/2026<small>Cải thiện chuyển đổi trên lưu lượng hiện có</small></div>
+  <div>
+    <div class="act">
+      <h3>1. Tối ưu các trang đích nhận lưu lượng AI nhưng có tỷ lệ chuyển đổi thấp</h3>
+      <div class="owner">Web, Content, Revenue · <span class="tag v">Đã kiểm chứng</span> số liệu GA4</div>
+      <p>Trong 4 tháng, trang Bến Thành nhận 1.053 phiên từ AI và 6 booking (0,57%). Trang Mây nhận 340 phiên và 1 booking (0,29%). Trang Sakyo nhận 141 phiên và 5 booking (3,5%), cao hơn Bến Thành và Mây từ 6 đến 12 lần trên cùng nguồn khách. Trang chủ nhận 204 phiên, không phát sinh booking.</p>
+      <details class="ex"><summary>Xem thêm: Ví dụ cụ thể</summary><div class="ex-body">GA4 ghi nhận 38 phiên từ AI vào thẳng link booking engine <code>/propertyibe2/?propertyId=664&amp;checkin=2026-10-16&amp;checkout=2026-10-18</code> và 18 phiên vào link có ngày 08/09. Không phiên nào phát sinh booking. Nhiều khả năng ChatGPT đang lưu và đưa lại link đặt phòng có ngày đã qua cho khách mới (<span class="tag i">Suy luận</span>). Đề xuất: (a) cấu hình booking engine tự chuyển link có ngày đã qua về màn hình chọn ngày thay vì báo lỗi; (b) đặt một link đặt phòng cố định, không kèm ngày, ở đầu mỗi trang khách sạn để AI trích dẫn link này; (c) so sánh bố cục trang Sakyo với Bến Thành và Mây, áp dụng các yếu tố đang cho kết quả tốt hơn.</div></details>
+    </div>
+    <div class="act">
+      <h3>2. Chỉnh sửa thông tin sai trước khi mở rộng độ phủ</h3>
+      <div class="owner">Web, Kênh, Marketing · <span class="tag v">Đã kiểm chứng</span> file Silverland-GEO New</div>
+      <p>AI đang đưa thông tin sai trong 1/3 số câu trả lời có nhắc Silverland. Tăng lượt nhắc tên ở giai đoạn này sẽ làm tăng số lần thông tin sai được hiển thị. Ưu tiên các việc <span class="term" data-k="g0">G0</span> còn tồn đọng: bật <span class="term" data-k="hreflang">hreflang</span>, sửa <span class="term" data-k="canonical">canonical</span> bản tiếng Việt, Hàn, Trung, sửa <span class="term" data-k="schema">Organization schema</span>, thống nhất một tên tập đoàn, rà soát listing Booking.com, Agoda, Expedia, Trip.com cho khớp <span class="term" data-k="factsheet">fact sheet</span>.</p>
+      <details class="ex"><summary>Xem thêm: Lý do OTA nằm trong phạm vi GEO</summary><div class="ex-body">từ 27/8/2026, Google cho phép đặt phòng ngay trong AI Mode tại Mỹ, nhưng chỉ qua 10 đối tác: Booking.com, Expedia, Hotels.com, Priceline, Trip.com và 5 chuỗi khách sạn quốc tế. Khách sạn độc lập như Silverland được hiển thị nhưng chưa thể đặt trực tiếp trong AI Mode. ChatGPT cũng đã có ứng dụng Booking.com và Expedia. Khi khách tại Mỹ đặt Silverland qua AI, thông tin hiển thị ở bước đặt phòng là listing OTA. Listing sai có thể dẫn đến mất booking hoặc phát sinh khiếu nại.</div></details>
+    </div>
+    <div class="act">
+      <h3>3. Chuẩn hóa cách đo lường</h3>
+      <div class="owner">Marketing · <span class="tag i">Đề xuất</span></div>
+      <p>Một báo cáo theo dõi hằng tháng gồm 4 nguồn: Semrush (lượt nhắc tên và thị phần trong nhóm, chạy song song nhóm cũ để giữ chuỗi số liệu), GA4 kênh AI theo thị trường và theo khách sạn, <span class="term" data-k="gscai">báo cáo Generative AI trong Search Console</span>, và <span class="term" data-k="bing">Bing Webmaster Tools</span>. Bổ sung câu hỏi "Bạn biết đến chúng tôi qua đâu" có lựa chọn ChatGPT hoặc công cụ AI tại bước đặt phòng và tại quầy lễ tân.</p>
+      <details class="ex"><summary>Xem thêm: Tiêu chí đánh giá thị trường</summary><div class="ex-body">một thị trường được đánh giá tốt khi đạt đủ 3 điều kiện: dẫn đầu điểm hiển thị, dẫn đầu hoặc thu hẹp khoảng cách lượt nhắc tên, và có ít nhất 3 booking từ kênh AI trong 3 tháng liên tiếp. Theo tiêu chí này, hiện tại chỉ Úc đạt đủ. Mỹ đạt điều kiện về booking.</div></details>
+    </div>
+  </div>
+</div>
+
+<div class="phase" id="gd-2">
+  <div class="when">6.2 · Tháng 11 đến 12/2026<small>Xử lý khoảng cách theo từng thị trường</small></div>
+  <div>
+    <div class="act">
+      <h3>4. Mỹ: thu hẹp khoảng cách lượt nhắc tên với La Siesta</h3>
+      <div class="owner">SEO, Content, Marketing</div>
+      <p>Mỹ có doanh thu kênh AI cao nhất và cũng có khoảng cách lượt nhắc tên lớn nhất (134 so với 227). Mở tab Nguồn trong Semrush cho thị trường Mỹ (486 nguồn), lọc các trang có nhắc La Siesta nhưng không nhắc Silverland. Nghiên cứu công khai (Nicolas Sitter, 6/2026) cho thấy ChatGPT đọc trang OTA nhiều nhưng ít trích dẫn OTA, trong khi Reddit và bài viết biên tập được trích dẫn ở tỷ lệ cao hơn.</p>
+      <details class="ex"><summary>Xem thêm: Ví dụ</summary><div class="ex-body">21 trang trong tab <span class="term" data-k="outreach">Outreach</span> chưa được liên hệ, gồm theluxuryeditor.com (Best Luxury Hotels In District 1 2026) cho Mây và Jolie, touristtolocal.com và 22places.com cho Bến Thành. Gửi fact sheet 1 trang có số liệu kiểm chứng được, không đề xuất hình thức trả phí.</div></details>
+    </div>
+    <div class="act">
+      <h3>5. Singapore: xác định nguyên nhân giảm hạng trước khi triển khai nội dung</h3>
+      <div class="owner">SEO</div>
+      <p>Ở T9, điểm hiển thị của Silverland giảm từ 36 xuống 30 trong khi La Siesta tăng từ 31 lên 36. So sánh bộ câu hỏi Semrush Singapore giữa T8 và T9 để xác định đây là giảm hiện diện hay do Semrush thay đổi bộ câu hỏi. Nếu là giảm hiện diện, đối chiếu các nguồn mới có nhắc La Siesta.</p>
+    </div>
+    <div class="act">
+      <h3>6. Nhật: ưu tiên bản tiếng Nhật cho Sakyo và Sil</h3>
+      <div class="owner">Content, Marketing</div>
+      <p>Semrush ghi nhận 22 lượt nhắc tên Silverland tại Nhật ở T9, cả nhóm 5 khách sạn cộng lại vài chục lượt, chưa đủ làm căn cứ ra quyết định. <span class="term" data-k="internal">Kiểm tra nội bộ</span> cho thấy khi câu hỏi bằng tiếng Nhật, Silverland không xuất hiện. Đề xuất đưa việc dựng bản tiếng Nhật đầy đủ cho Sakyo, Sil (hạn hiện tại 15/12) và liên hệ cụm travel.co.jp, hcm-cityguide.com lên sớm hơn.</p>
+    </div>
+    <div class="act">
+      <h3>7. Tăng tỷ trọng booking hạng phòng cao và lưu trú dài ngày từ kênh AI</h3>
+      <div class="owner">Content, Revenue · <span class="tag i">Suy luận</span></div>
+      <p>Giá trị trung bình booking từ kênh AI thấp hơn mức chung 21%. Ở tình huống S10 (công tác dài ngày 2 tuần), Silverland chưa xuất hiện, trong khi Sil có tệp khách công tác Nhật lưu trú dài ngày. Trang chuyên đề lưu trú dài ngày (hạn 15/12) có thể đồng thời xử lý tình huống S10 và nâng giá trị booking.</p>
+    </div>
+  </div>
+</div>
+
+<div class="phase" id="gd-3">
+  <div class="when">6.3 · Quý 1/2027<small>Chuẩn bị cho đặt phòng trực tiếp qua AI</small></div>
+  <div>
+    <div class="act">
+      <h3>8. Chuẩn bị khi Google và ChatGPT mở cho khách sạn độc lập</h3>
+      <div class="owner">Revenue, Web, Kênh</div>
+      <p>Kiểm tra trạng thái <span class="term" data-k="fbl">Google Hotel Center và free booking links</span> của Silverland qua kênh kết nối hiện có, để website chính thức hiển thị cạnh OTA khi AI Mode liệt kê lựa chọn đặt phòng. Duy trì giá website với mã <span class="term" data-k="svlmember">SVLMEMBER</span> ở mức cạnh tranh với OTA, vì AI tổng hợp giá từ nhiều nguồn và khách có xu hướng chọn mức giá thấp nhất.</p>
+      <details class="ex"><summary>Xem thêm: Chưa đề xuất ngân sách cho ChatGPT Ads</summary><div class="ex-body">hình thức tự chạy quảng cáo mới mở tại Mỹ (thử nghiệm từ 9/2/2026) và 31 thị trường châu Âu (từ 31/8/2026). Tài khoản mới có thể bị giới hạn quảng cáo trong nước sở tại. Chưa có benchmark hiệu quả theo ngành. Đề xuất theo dõi, chưa phân bổ ngân sách.</div></details>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="dont" id="khong-nen">
+  <h3 style="color:var(--bad)">6.4 · Không thực hiện</h3>
+  <p style="margin:0">Không mua các gói cam kết "được ChatGPT nhắc tên" hoặc huy hiệu chứng nhận AI. Không ưu tiên <span class="term" data-k="llmstxt">llms.txt</span> hoặc FAQ schema để lấy <span class="term" data-k="rich">rich result</span> (Google đã giới hạn FAQ rich result cho đa số website từ 2023). Không dùng chỉ số Semrush làm KPI kinh doanh. KPI kinh doanh là booking và doanh thu ghi nhận trong GA4 và booking engine.</p>
+</div>
+
+<h2 id="chi-tieu">7. Mục tiêu đề xuất đến 31/03/2027 <a class="back" href="#muc-luc">Về mục lục ↑</a></h2>
+<p class="sub">Mục tiêu đề xuất dựa trên chuỗi số liệu T7 đến T10/2026.</p>
+<div class="tbl-wrap">
+<table style="min-width:640px">
+<thead><tr><th scope="col">Chỉ số</th><th scope="col">Hiện tại</th><th scope="col">Mục tiêu</th><th scope="col">Nguồn đo</th></tr></thead>
+<tbody>
+<tr><td>Tỷ trọng doanh thu website từ kênh AI</td><td class="n">3,63% (T10)</td><td class="n">5% bình quân quý</td><td>GA4</td></tr>
+<tr><td>Tỷ lệ chuyển đổi phiên AI thành booking</td><td class="n">0,84%</td><td class="n">1,5%</td><td>GA4</td></tr>
+<tr><td>Tỷ lệ AI nói đúng</td><td class="n">67%</td><td class="n">90% (theo mục tiêu file GEO)</td><td><span class="term" data-k="internal">Kiểm tra nội bộ</span></td></tr>
+<tr><td>Lượt nhắc tên tại Mỹ so với đối thủ dẫn đầu</td><td class="n">0,59 lần</td><td class="n">0,8 lần</td><td>Semrush, nhóm cũ</td></tr>
+<tr><td>Số thị trường đạt đủ 3 tiêu chí</td><td class="n">1 (Úc)</td><td class="n">3</td><td>Mục 3</td></tr>
+</tbody></table>
+</div>
+
+<h2 id="thuat-ngu">8. Giải thích thuật ngữ <a class="back" href="#muc-luc">Về mục lục ↑</a></h2>
+<p class="sub">Các thuật ngữ được gạch chân chấm trong báo cáo. Nội dung giống phần hiển thị khi rê chuột.</p>
+<div class="tbl-wrap">
+<table style="min-width:640px" id="glossary-table">
+<thead><tr><th scope="col" style="width:26%">Thuật ngữ</th><th scope="col">Giải thích</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<footer id="nguon">
+  <h2 style="margin-top:0;font-size:20px">9. Nguồn dữ liệu và giới hạn <a class="back" href="#muc-luc">Về mục lục ↑</a></h2>
+  <p><b>Dữ liệu nội bộ:</b> Semrush AI Visibility Toolkit (deck T7, T8, T9/2026 và file tong-hop-ai-visibility-2026, chuỗi T1 đến T9 đọc ngày 2/10/2026); GA4 property 340245620 kéo ngày 27/10/2026, tiền tệ VND, kênh AI theo Default Channel Group "AI Assistant" cho tổng tháng và theo session source chứa chatgpt, gemini, perplexity, copilot, claude cho chiều quốc gia và trang đích (hai cách lọc chênh nhau dưới 3%); file Silverland-GEO New (đường cơ sở 06/10/2026, tab Tiến độ, Theo dõi khách sạn, Outreach).</p>
+  <p><b>Giới hạn:</b> chưa có Semrush T10 vì tháng chưa đóng và nhóm đối thủ đã đổi. Booking theo thị trường là mẫu nhỏ. GA4 không tách được AI Overview và AI Mode.</p>
+  <p><b>Nguồn ngành</b> (đã đọc toàn bài):</p>
+  <ol>
+    <li><a href="https://www.phocuswire.com/news/finance/booking-holdings-q2-2026-earnings">PhocusWire: Booking Holdings Q2 2026 earnings</a>, LLM dưới 1% room nights.</li>
+    <li><a href="https://www.travelerstoday.com/articles/60754/20260805/hotel-bookings-via-ai-chatbots-stay-below-1-booking-holdings-confirms.htm">Travelers Today: Hotel bookings via AI chatbots stay below 1%</a>, kèm số Lighthouse và Adobe.</li>
+    <li><a href="https://www.phocuswire.com/news/technology/google-ai-mode-hotel-booking-agentic-flights-loyalty">PhocusWire: Hotel booking goes live in Google's AI Mode</a>, 27/8/2026, danh sách đối tác.</li>
+    <li><a href="https://www.hotel-online.com/news/google-just-started-booking-hotels-inside-ai-independent-hotels-were-not-on-the-list">Hotel Online: Independent hotels were not on the list</a>.</li>
+    <li><a href="https://skift.com/2026/02/11/marriott-google-agentic-travel-booking/">Skift: Marriott says Google AI Mode will process hotel bookings</a>.</li>
+    <li><a href="https://www.phocuswire.com/news/technology/openai-chatgpt-instant-checkout-travel-intermediaries">PhocusWire: OpenAI's shift on Instant Checkout for travel</a>.</li>
+    <li><a href="https://insights.ehotelier.com/insights/2026/07/07/the-numbers-behind-ais-rise-as-a-booking-channel-for-independent-hotels/">eHotelier / Lighthouse: AI as a booking channel for independent hotels</a>.</li>
+    <li><a href="https://www.nicolassitter.com/research/chatgpt-hotel-price-sources-2026">Nicolas Sitter: How ChatGPT pulls hotel prices</a> và <a href="https://nicolassitter.com/research/ai-hotel-landscape-2026">AI Hotel Landscape 2026</a> (đơn vị tư vấn, có lợi ích thương mại).</li>
+    <li><a href="https://openlens.com/blog/en/ai-visibility-hotels-tour-operators-2026">OpenLens: AI visibility benchmarks for hotels 2026</a> (tổng hợp Adobe, Nokumo, Phocuswright; đơn vị bán công cụ).</li>
+    <li><a href="https://www.prostay.com/blog/ai-search-optimization-for-hotels/">Prostay: AI search optimization for hotels</a> (đơn vị bán phần mềm).</li>
+    <li><a href="https://ppc.land/google-finally-gives-search-console-its-own-generative-ai-visibility-reports/">PPC Land: Search Console generative AI reports</a>, ra mắt 3/6/2026.</li>
+    <li><a href="https://www.hospitalitynet.org/opinion/4134988/chatgpt-ads-give-distinctive-hotels-a-new-place-to-be-discovered">Hospitality Net: ChatGPT Ads for hotels</a>, 19/10/2026.</li>
+    <li><a href="https://www.hospitality.today/article/the-ai-booking-scare-runs-on-a-number-that-isnt-about-hotels">Hospitality.today: The AI booking scare runs on a number that isn't about hotels</a>.</li>
+  </ol>
+</footer>
+</div>
+
+<script id="data" type="application/json">
+{"months":["T7","T8","T9","T10 (26 ngày)"],"aiSessions":[501,872,1175,1381],"aiRevenueM":[41.3,98.8,64.3,153.7],"revShare":[1.30,2.17,1.46,3.63],"hotelMonthTotals":[36.4,87.2,56.7,135.5],"hotels":[["Bến Thành", [22.2, 34.7, 7.8, 83.9], [2, 5, 1, 7], [1161.1, 1608.6, 1355.8, 1368.9], "--navy"], ["Yen", [9.7, 7.8, 0, 36.9], [1, 1, 0, 5], [341.5, 510.6, 376.8, 359.5], "--accent"], ["Mây", [0, 21.5, 13.1, 7.9], [0, 1, 1, 1], [790.9, 1122.5, 1119.9, 733.0], "--good"], ["Jolie", [0, 6.5, 17.0, 2.4], [0, 1, 2, 1], [121.4, 262.1, 302.8, 521.5], "--warn"], ["Sakyo", [4.6, 11.1, 8.8, 0], [1, 1, 1, 0], [281.9, 354.1, 563.0, 514.3], "--h6"], ["Sil", [0, 5.6, 10.0, 4.5], [0, 1, 2, 1], [101.8, 120.2, 154.4, 237.0], "--h7"]],
+ "markets":["Mỹ","Úc","Việt Nam","Nhật","Singapore"],"mktRevM":[100.5,72.5,30.3,28.5,15.1],"mktShare":[2.58,2.22,6.09,2.49,0.74]}
+</script>
+<script>
+(function(){
+  const d=JSON.parse(document.getElementById('data').textContent);
+  const root=document.documentElement, btn=document.getElementById('themeBtn');
+  try{const t=localStorage.getItem('svl-theme'); if(t) root.setAttribute('data-theme',t);}catch(e){}
+  let charts=[];
+  const css=n=>getComputedStyle(root).getPropertyValue(n).trim();
+  function draw(){
+    charts.forEach(c=>c.destroy()); charts=[];
+    if(typeof Chart==='undefined'){document.querySelectorAll('.canvas-box,.mini-box').forEach(b=>b.innerHTML='<p style="color:var(--muted)">Không tải được thư viện biểu đồ. Số liệu đầy đủ có trong bảng ở trên.</p>');return;}
+    Chart.defaults.font.family='"Be Vietnam Pro", system-ui, sans-serif';
+    Chart.defaults.color=css('--ink-2');
+    const grid=css('--line');
+    charts.push(new Chart(document.getElementById('c0'),{
+      data:{labels:d.months,datasets:[
+        {type:'bar',label:'Doanh thu AI (triệu đồng)',data:d.aiRevenueM,backgroundColor:d.aiRevenueM.map((v,i)=>i===3?css('--good'):css('--chart-2')),yAxisID:'y',order:2},
+        {type:'line',label:'% doanh thu website',data:d.revShare,borderColor:css('--accent'),backgroundColor:css('--accent'),tension:.25,pointRadius:4,yAxisID:'y1',order:1}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:11}}},
+          tooltip:{callbacks:{
+            label:c=>c.dataset.yAxisID==='y'?' '+c.parsed.y.toLocaleString('vi-VN')+' triệu đồng':' '+c.parsed.y.toLocaleString('vi-VN')+'% doanh thu website',
+            afterLabel:c=>{if(c.dataset.yAxisID!=='y'||c.dataIndex===0)return '';const a=d.aiRevenueM[c.dataIndex-1],b=d.aiRevenueM[c.dataIndex];const g=Math.round((b/a-1)*100);return ' So với tháng trước: '+(g>0?'+':'')+g+'%';}}}},
+        scales:{y:{title:{display:true,text:'Triệu đồng',font:{size:11}},grid:{color:grid},beginAtZero:true,ticks:{font:{size:11}}},
+                y1:{position:'right',title:{display:true,text:'% DT web',font:{size:11}},grid:{display:false},beginAtZero:true,ticks:{font:{size:11},callback:v=>v+'%'}},
+                x:{grid:{display:false},ticks:{font:{size:11}}}}}
+    }));
+    const fmt=v=>(Math.round(v*10)/10).toLocaleString('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:1});
+    const monthTotal=i=>d.hotelMonthTotals[i];
+    const totalsPlugin={id:'totals',afterDatasetsDraw(ch){
+      const ctx=ch.ctx; const metaLast=ch.getDatasetMeta(ch.data.datasets.length-1);
+      ctx.save(); ctx.font='600 13px "Be Vietnam Pro", sans-serif'; ctx.fillStyle=css('--ink'); ctx.textAlign='center';
+      d.months.forEach((m,i)=>{ let top=Infinity; ch.data.datasets.forEach((ds,k)=>{const el=ch.getDatasetMeta(k).data[i]; if(el && !ch.getDatasetMeta(k).hidden) top=Math.min(top,el.y);});
+        const x=metaLast.data[i].x; ctx.fillText(fmt(monthTotal(i))+' tr',x,top-8); });
+      ctx.font='500 11.5px "Be Vietnam Pro", sans-serif'; ctx.fillStyle='#ffffff';
+      ch.data.datasets.forEach((ds,k)=>{ const meta=ch.getDatasetMeta(k); if(meta.hidden) return; meta.data.forEach((el,i)=>{ const v=ds.data[i]; if(v>=12 && Math.abs(el.base-el.y)>=18){ ctx.fillText(fmt(v),el.x,(el.y+el.base)/2+4);} }); });
+      ctx.restore(); }};
+    charts.push(new Chart(document.getElementById('c3'),{
+      type:'bar',
+      data:{labels:d.months,datasets:d.hotels.map(h=>({label:h[0],data:h[1],backgroundColor:css(h[4]),borderColor:css('--paper'),borderWidth:1,maxBarThickness:120}))},
+      options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:26}},
+        interaction:{mode:'nearest',intersect:true},
+        plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:16}},
+          tooltip:{padding:12,bodySpacing:4,titleMarginBottom:8,footerMarginTop:8,
+            callbacks:{
+              title:items=>items[0].dataset.label+' · '+items[0].label,
+              label:c=>{const h=d.hotels[c.datasetIndex], i=c.dataIndex, v=h[1][i];
+                const lines=['Doanh thu kênh AI: '+fmt(v)+' triệu đồng'];
+                if(i>0){const dv=v-h[1][i-1]; lines.push('So với '+d.months[i-1]+': '+(dv>0?'+':'')+fmt(dv)+' triệu đồng');}
+                lines.push('Số phòng bán qua kênh AI: '+h[2][i]);
+                if(h[2][i]>0) lines.push('Giá trị bình quân mỗi phòng: '+fmt(v/h[2][i])+' triệu đồng');
+                lines.push('Tỷ trọng trong doanh thu kênh AI tháng: '+fmt(100*v/monthTotal(i))+'%');
+                lines.push('% doanh thu website của khách sạn từ AI: '+fmt(100*v/h[3][i])+'%');
+                return lines;},
+              footer:items=>'Tổng doanh thu kênh AI '+items[0].label+': '+fmt(monthTotal(items[0].dataIndex))+' triệu đồng'}}},
+        scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:13}}},y:{stacked:true,beginAtZero:true,suggestedMax:150,title:{display:true,text:'Triệu đồng'},grid:{color:grid}}}},
+      plugins:[totalsPlugin]
+    }));
+    charts.push(new Chart(document.getElementById('c1'),{
+      data:{labels:d.months,datasets:[
+        {type:'bar',label:'Doanh thu (triệu đồng)',data:d.aiRevenueM,backgroundColor:css('--good'),yAxisID:'y'},
+        {type:'line',label:'Phiên',data:d.aiSessions,borderColor:css('--accent'),backgroundColor:css('--accent'),tension:.25,yAxisID:'y1',pointRadius:4}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},
+        scales:{y:{title:{display:true,text:'Triệu đồng'},grid:{color:grid},beginAtZero:true},
+                y1:{position:'right',title:{display:true,text:'Phiên'},grid:{display:false},beginAtZero:true},
+                x:{grid:{display:false}}}}
+    }));
+    charts.push(new Chart(document.getElementById('c2'),{
+      type:'bar',
+      data:{labels:d.markets,datasets:[{label:'Doanh thu AI 1/7 đến 26/10 (triệu đồng)',data:d.mktRevM,backgroundColor:d.markets.map((m,i)=>i<2?css('--navy'):css('--chart-2'))}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},
+        tooltip:{callbacks:{afterLabel:c=>'Chiếm '+d.mktShare[c.dataIndex].toLocaleString('vi-VN')+'% doanh thu website của thị trường'}}},
+        scales:{x:{title:{display:true,text:'Triệu đồng'},grid:{color:grid},beginAtZero:true},y:{grid:{display:false}}}}
+    }));
+  }
+  btn.addEventListener('click',()=>{
+    const cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    const nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('svl-theme',nxt);}catch(e){} draw();
+  });
+  draw();
+})();
+</script>
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+<script>
+(function(){
+  const G={"internal": ["Kiểm tra nội bộ", "Bài kiểm tra team tự thực hiện ngày 06/10/2026: đặt 66 câu hỏi theo 17 tình huống khách thường hỏi cho công cụ AI có tra cứu web, ghi lại toàn bộ câu trả lời, rồi 2 người chấm độc lập. Mỗi câu trả lời được chấm 3 điểm: AI có nhắc khách sạn Silverland không, nhắc khách sạn nào, thông tin đưa ra có đúng không. Ví dụ tình huống S10: khách công tác 2 tuần cần phòng yên tĩnh, bàn làm việc, wifi, ăn sáng. Mục đích: đo những điều Semrush không đo, nhất là AI nói đúng hay sai về Silverland."], "itemrev": ["Doanh thu theo phòng (item revenue)", "Doanh thu GA4 ghi theo từng hạng phòng trong mỗi booking, có gắn tên khách sạn, nên tách được doanh thu theo khách sạn. Tổng có thể thấp hơn tổng giá trị đơn hàng do không gồm một số khoản như thuế, phí hoặc dịch vụ cộng thêm."], "aeo": ["AEO", "Answer Engine Optimization. Tối ưu nội dung để được các công cụ trả lời (Google AI Overview, AI Mode, ChatGPT) chọn làm nội dung trả lời trực tiếp cho câu hỏi của người dùng."], "geo": ["GEO", "Generative Engine Optimization. Tối ưu để thương hiệu được các công cụ AI tạo sinh (ChatGPT, Gemini, Perplexity, Google AI Mode) nhắc tên, mô tả đúng và dẫn link khi trả lời người dùng."], "semrush": ["Semrush AI Visibility", "Công cụ của Semrush chạy một bộ câu hỏi mẫu trên ChatGPT, Gemini, Google AI Overview và AI Mode theo từng quốc gia, rồi ghi nhận thương hiệu nào được nhắc tên và được dẫn link. Silverland dùng công cụ này để so sánh với nhóm đối thủ hằng tháng."], "score": ["Điểm hiển thị AI", "Chỉ số tương đối thang 0 đến 100 do Semrush tính, phản ánh mức độ Silverland xuất hiện trong câu trả lời của AI so với các khách sạn khác trên cùng bộ câu hỏi. Đây không phải số đếm: điểm có thể tăng khi lượt nhắc tên giảm, nếu đối thủ giảm nhiều hơn."], "mention": ["Lượt nhắc tên (mention)", "Số lần câu trả lời của AI nêu tên Silverland hoặc một khách sạn thuộc Silverland trong bộ câu hỏi Semrush theo dõi, tính trong tháng. Ví dụ: khách hỏi 'khách sạn boutique nào ở Quận 1 có hồ bơi trên sân thượng' và AI liệt kê Silverland Mây trong danh sách, đó là 1 lượt nhắc tên."], "citation": ["Trích dẫn (citation)", "Số lần câu trả lời của AI đặt link dẫn về một trang của silverlandhotels.com làm nguồn thông tin. Một câu trả lời có thể nhắc tên mà không dẫn link, hoặc dẫn nhiều link cùng lúc. Trích dẫn là bước đưa khách từ câu trả lời AI về website."], "group": ["Nhóm so sánh", "5 khách sạn được so sánh cố định trong Semrush. Đến T9/2026: Silverland, La Siesta, Fusion Suites, Liberty Central, Grand Hotel du Lac. Từ T10/2026: thay La Siesta và Grand Hotel du Lac bằng Kin và M-Village."], "sov": ["Thị phần trong nhóm", "Lượt nhắc tên của Silverland chia tổng lượt nhắc tên của 5 khách sạn trong nhóm so sánh, cộng trên 5 thị trường. Đây là số tự tính từ dữ liệu Semrush, không phải chỉ số có sẵn của công cụ."], "som": ["Share of Model", "Tỷ phần của Silverland trong tổng số lần AI nêu tên khách sạn ở bài kiểm tra nội bộ, có trọng số theo vị trí xuất hiện. Đường cơ sở 06/10/2026 là 10,9%."], "presence": ["Tỷ lệ có mặt", "Số câu trả lời của AI có nhắc ít nhất một khách sạn Silverland, chia tổng số câu hỏi. Đường cơ sở 06/10/2026: 36 trên 66 câu, tương đương 55%."], "accuracy": ["Tỷ lệ AI nói đúng", "Trong các câu trả lời có nhắc Silverland, tỷ lệ câu không chứa lỗi thông tin (sai hạng sao, sai giờ, sai tiện ích, sai địa chỉ). Đường cơ sở 06/10/2026: 33 trên 49 câu, tương đương 67%."], "home": ["Câu sân nhà", "4 câu hỏi mô tả đúng tình huống mà một khách sạn cụ thể nên được AI gợi ý, mỗi câu chạy 3 lần, tổng 12 câu trả lời. Ví dụ: Mây đạt 4/12 nghĩa là chỉ 4 trong 12 câu trả lời có nhắc Mây."], "red": ["Tình huống đỏ", "Tình huống khách hỏi mà Silverland không xuất hiện trong câu trả lời nào của AI. Hiện có 5 tình huống, ví dụ S10 (công tác dài ngày 2 tuần) và S12 (đặt phòng công tác 5 đêm có đưa đón sân bay, hỏi bằng tiếng Nhật)."], "ga4": ["GA4", "Google Analytics 4, công cụ đo lưu lượng và booking trên silverlandhotels.com. Số liệu trong báo cáo lấy từ property 340245620."], "session": ["Phiên (session)", "Một lượt truy cập website được GA4 ghi nhận. Một người vào website 2 lần cách xa nhau được tính là 2 phiên."], "aichannel": ["Kênh AI", "Các phiên GA4 ghi nhận nguồn giới thiệu là công cụ AI: chatgpt.com, gemini.google.com, perplexity.ai, copilot, claude.ai. Không bao gồm click từ Google AI Overview và AI Mode, vì GA4 tính các click này vào Organic."], "source": ["Session source", "Trường dữ liệu trong GA4 cho biết phiên truy cập đến từ website nào, ví dụ chatgpt.com hoặc google."], "aibooking": ["Booking AI", "Giao dịch đặt phòng thành công phát sinh trong phiên đến từ kênh AI. GA4 ghi nhận theo nguồn của phiên có giao dịch, nên khách xem ChatGPT rồi quay lại đặt qua Google sẽ không được tính vào đây."], "mktshare": ["% doanh thu thị trường từ AI", "Doanh thu booking từ kênh AI của một quốc gia chia tổng doanh thu website từ quốc gia đó, giai đoạn 1/7 đến 26/10/2026. Quốc gia theo vị trí truy cập, không phải quốc tịch."], "cvr": ["Tỷ lệ chuyển đổi", "Số booking chia số phiên. Ví dụ 33 booking trên 3.929 phiên là 0,84%."], "aov": ["Giá trị trung bình mỗi booking", "Doanh thu chia số booking trong cùng kỳ. Phản ánh hạng phòng và số đêm lưu trú của khách."], "landing": ["Trang đích (landing page)", "Trang đầu tiên khách vào trong một phiên, ví dụ trang khách sạn Silverland Bến Thành khi khách bấm link từ ChatGPT."], "ibe": ["Booking engine", "Hệ thống đặt phòng trực tiếp trên website, nơi khách chọn ngày, chọn phòng và thanh toán."], "aio": ["AI Overview", "Đoạn tóm tắt do AI của Google tạo, hiển thị ở đầu trang kết quả tìm kiếm, kèm danh sách nguồn được dẫn."], "aimode": ["AI Mode", "Chế độ hỏi đáp nhiều lượt của Google Search. Với câu hỏi về khách sạn, AI Mode trả về danh sách khách sạn kèm đánh giá. Tại Mỹ, từ 27/8/2026 đã cho đặt phòng ngay trong AI Mode qua 10 đối tác."], "organic": ["Organic", "Kênh GA4 cho lưu lượng từ kết quả tìm kiếm tự nhiên (không trả phí) của Google, Bing."], "direct": ["Direct", "Kênh GA4 cho phiên không xác định được nguồn, ví dụ khách tự gõ địa chỉ website hoặc mở từ bookmark."], "llm": ["LLM", "Large Language Model, mô hình ngôn ngữ lớn đứng sau các công cụ như ChatGPT, Gemini, Claude."], "roomnights": ["Room nights", "Số đêm phòng đã bán. Một phòng ở 3 đêm là 3 room nights."], "ota": ["OTA", "Online Travel Agency, đại lý du lịch trực tuyến như Booking.com, Agoda, Expedia, Trip.com."], "benchmark": ["Mốc tham chiếu (benchmark)", "Số liệu công bố của doanh nghiệp hoặc đơn vị nghiên cứu trong ngành, dùng để so sánh kết quả của Silverland."], "runrate": ["Ước tính quy đổi", "Doanh thu 26 ngày chia 26 rồi nhân 31. Chỉ là ước tính theo tốc độ hiện tại, không phải số thực tế."], "g0": ["G0", "Đợt việc đầu tiên trong kế hoạch GEO, tập trung chỉnh sửa thông tin sai, hạn 31/10/2026."], "hreflang": ["hreflang", "Thẻ khai báo cho Google biết một trang có những bản ngôn ngữ nào, để hiển thị đúng bản cho khách ở từng quốc gia."], "canonical": ["Canonical", "Thẻ khai báo trang nào là bản gốc. Nếu bản tiếng Việt khai bản gốc là bản tiếng Anh, Google sẽ bỏ qua bản tiếng Việt."], "schema": ["Organization schema", "Đoạn mã ẩn trong website mô tả thông tin doanh nghiệp (tên, logo, liên kết) để công cụ tìm kiếm và AI đọc chính xác."], "factsheet": ["Fact sheet", "Bảng thông tin chuẩn của từng khách sạn: hạng sao, số phòng, giờ nhận trả phòng, tiện ích, địa chỉ."], "gscai": ["Báo cáo Generative AI trong Search Console", "Báo cáo Google ra mắt 3/6/2026, cho biết website xuất hiện bao nhiêu lần trong AI Overview và AI Mode, theo trang, quốc gia, thiết bị. Chưa có số click. Đang mở dần cho một phần website."], "bing": ["Bing Webmaster Tools", "Công cụ quản trị website của Microsoft. ChatGPT Search dùng Bing làm nguồn tìm kiếm chính, nên dữ liệu Bing phản ánh một phần khả năng website được ChatGPT tìm thấy."], "outreach": ["Outreach", "Liên hệ các trang bên thứ ba (blog du lịch, trang hướng dẫn, báo chí) để cập nhật hoặc bổ sung thông tin về khách sạn Silverland."], "fbl": ["Google Hotel Center và free booking links", "Hotel Center là công cụ Google cho khách sạn cung cấp giá và tình trạng phòng. Free booking links là link đặt phòng trực tiếp miễn phí, hiển thị website khách sạn cạnh OTA trên Google."], "svlmember": ["SVLMEMBER", "Mã thành viên áp dụng khi đặt phòng trực tiếp trên website Silverland."], "llmstxt": ["llms.txt", "Tệp đề xuất đặt trên website để hướng dẫn công cụ AI đọc nội dung. Chưa có công cụ AI lớn nào xác nhận sử dụng tệp này."], "rich": ["Rich result", "Kết quả tìm kiếm Google có định dạng mở rộng, ví dụ hiển thị câu hỏi thường gặp ngay dưới link."]};
+  const tip=document.getElementById('tip');
+  let cur=null, pinned=false;
+  function show(el){
+    const g=G[el.dataset.k]; if(!g) return;
+    tip.innerHTML='<b></b><span></span>';
+    tip.firstChild.textContent=g[0]; tip.lastChild.textContent=g[1];
+    tip.style.display='block'; tip.setAttribute('aria-hidden','false');
+    el.setAttribute('aria-describedby','tip');
+    const r=el.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight, vw=window.innerWidth, vh=window.innerHeight;
+    let left=Math.min(Math.max(8,r.left+r.width/2-w/2),vw-w-8);
+    let top=r.bottom+8; if(top+h>vh-8) top=Math.max(8,r.top-h-8);
+    tip.style.left=left+'px'; tip.style.top=top+'px'; cur=el;
+  }
+  function hide(){ pinned=false; tip.style.display='none'; tip.setAttribute('aria-hidden','true'); if(cur) cur.removeAttribute('aria-describedby'); cur=null; }
+  document.querySelectorAll('.term').forEach(el=>{
+    if(!G[el.dataset.k]) return;
+    el.setAttribute('tabindex','0');
+    el.addEventListener('mouseenter',()=>show(el));
+    el.addEventListener('mouseleave',()=>{if(!pinned) hide();});
+    el.addEventListener('focus',()=>show(el));
+    el.addEventListener('blur',()=>{if(!pinned) hide();});
+    el.addEventListener('click',e=>{e.stopPropagation(); show(el); pinned=true;});
+  });
+  document.addEventListener('click',hide);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+  window.addEventListener('scroll',()=>{if(cur){const r=cur.getBoundingClientRect(); if(r.bottom<0||r.top>window.innerHeight) hide(); else show(cur);}},{passive:true});
+  const tb=document.querySelector('#glossary-table tbody');
+  Object.values(G).sort((a,b)=>a[0].localeCompare(b[0],'vi')).forEach(g=>{
+    const tr=document.createElement('tr'); const a=document.createElement('td'); const b=document.createElement('td');
+    a.textContent=g[0]; b.textContent=g[1]; tr.append(a,b); tb.append(tr);
+  });
+})();
+</script>
+<script>window.addEventListener('beforeprint',()=>document.querySelectorAll('details.ex').forEach(d=>d.open=true));</script>
+</body>
+</html>
