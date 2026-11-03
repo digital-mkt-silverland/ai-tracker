@@ -477,7 +477,7 @@ details.ex .ex-body{background:var(--accent-soft);padding:12px 14px;margin-top:6
     <tr><th scope="row">Báo, tạp chí, blog du lịch</th><td>Bài "top khách sạn Quận 1", cẩm nang du lịch</td><td>ChatGPT trích dẫn 59% số bài loại này mà nó đọc khi trả lời câu hỏi về giá phòng.</td><td>Thấp: cần liên hệ để được nhắc tên</td></tr>
     <tr><th scope="row">Diễn đàn, cộng đồng</th><td>Reddit, group Facebook, note.com</td><td>AI Mode vẫn giữ nhóm này sau đợt giảm nguồn tháng 8. Tỷ trọng trích dẫn Reddit trong ChatGPT giảm từ 3,8% xuống 0,5% giữa tháng 8/2026 (số tạm thời).</td><td>Thấp: chỉ tham gia trả lời công khai với tư cách khách sạn, không đăng bài giả làm khách</td></tr>
     <tr><th scope="row">Video</th><td>YouTube</td><td>Gemini dẫn YouTube trong 13,6% câu trả lời. AI Mode giữ lại 23% số video từng được dẫn sau đợt giảm nguồn.</td><td>Cao: tự sản xuất video</td></tr>
-    <tr><th scope="row">Cơ sở tri thức</th><td>Wikipedia, <span class="term" data-k="wikidata">Wikidata</span></td><td>Wikipedia chiếm 10,4% lượt trích dẫn ngành khách sạn, gấp đôi tên miền đứng thứ hai.</td><td>Trung bình: tạo mục Wikidata cho từng khách sạn</td></tr>
+    <tr><th scope="row">Cơ sở tri thức</th><td>Wikipedia, <span class="term" data-k="wikidata">Wikidata</span></td><td>Wikipedia chiếm 10,4% lượt trích dẫn ngành khách sạn, gấp đôi tên miền đứng thứ hai.</td><td>Trung bình: tối ưu nội dung mục Wikidata đã có của từng khách sạn</td></tr>
     <tr><th scope="row">Bản đồ, hồ sơ địa phương</th><td><span class="term" data-k="gbp">Google Business Profile</span>, <span class="term" data-k="bingplaces">Bing Places</span></td><td>79% link khách sạn trong AI Mode dẫn về Google Business Profile (một nghiên cứu, do đơn vị bán công cụ công bố).</td><td>Cao: tự quản lý hồ sơ</td></tr>
     <tr><th scope="row">Cơ quan du lịch</th><td>Trang du lịch của thành phố, tỉnh</td><td>Chiếm 3,9% lượt trích dẫn ngành khách sạn.</td><td>Thấp</td></tr>
   </tbody>
@@ -635,8 +635,8 @@ details.ex .ex-body{background:var(--accent-soft);padding:12px 14px;margin-top:6
   <thead><tr><th scope="col" style="width:16%">Hạn</th><th scope="col">Việc</th></tr></thead>
   <tbody>
     <tr><td class="n">06/11/2026</td><td>9. Đưa website lên Bing · 17. Singapore: xác định nguyên nhân giảm hạng · Nhận file kết quả kiểm tra 17 tình huống và số đêm lưu trú của booking Mây (đầu vào cho việc 7 và 8)</td></tr>
-    <tr><td class="n">13/11/2026</td><td>4. Chuẩn hóa đo lường · 7. Phân tích 17 tình huống · 11. Tạo mục Wikidata · 13. Kiểm tra Google Hotel Center · Gửi Travelanium (nhà cung cấp booking engine của Silverland) yêu cầu sửa link có ngày đã qua (việc 1) · Danh sách liên hệ báo chí và fact sheet (việc 10)</td></tr>
-    <tr><td class="n">20/11/2026</td><td>3. Hoàn thiện Google Business Profile · 8. Phân tích Mây cho booking dài ngày</td></tr>
+    <tr><td class="n">13/11/2026</td><td>4. Chuẩn hóa đo lường · 7. Phân tích 17 tình huống · 11. Tối ưu nội dung Wikidata · 13. Kiểm tra Google Hotel Center · Gửi Travelanium (nhà cung cấp booking engine của Silverland) yêu cầu sửa link có ngày đã qua (việc 1) · Danh sách liên hệ báo chí và fact sheet (việc 10)</td></tr>
+    <tr><td class="n">20/11/2026</td><td>3. Tối ưu, thống nhất thông tin Google Business Profile · 8. Phân tích Mây cho booking dài ngày</td></tr>
     <tr><td class="n">30/11/2026</td><td>1. Tối ưu trang đích · 2. Sửa thông tin sai · 14. Chỉnh sửa trang cho các truy vấn vị trí 7 đến 10 · 15. Kế hoạch nội dung theo thị trường</td></tr>
     <tr><td class="n">15/12/2026</td><td>5. Tăng booking hạng phòng cao · 6. Tăng booking lưu trú dài ngày · 16. Nội dung tiếng Nhật · Video Bến Thành, Mây, Yen (việc 12)</td></tr>
     <tr><td class="n">31/12/2026</td><td>10. Bài đăng trên báo và blog · Video Sakyo, Sil, Jolie (việc 12)</td></tr>
@@ -660,9 +660,9 @@ details.ex .ex-body{background:var(--accent-soft);padding:12px 14px;margin-top:6
       <details class="ex"><summary>Xem thêm: Lý do OTA nằm trong phạm vi GEO</summary><div class="ex-body">Từ 27/8/2026, Google cho phép đặt phòng ngay trong AI Mode tại Mỹ, nhưng chỉ qua 10 đối tác: Booking.com, Expedia, Hotels.com, Priceline, Trip.com và 5 chuỗi khách sạn quốc tế. Khách sạn độc lập như Silverland được hiển thị nhưng chưa thể đặt trực tiếp trong AI Mode. ChatGPT cũng đã có ứng dụng Booking.com và Expedia. Khi khách tại Mỹ đặt Silverland qua AI, thông tin hiển thị ở bước đặt phòng là listing OTA. Ví dụ: Sil cần được mô tả là "onsen-style rooftop jacuzzi" ở website, Google Business Profile, Booking.com, Agoda, Tripadvisor, không nơi nào gọi là "pool".</div></details>
     </div>
     <div class="act">
-      <h3>3. Hoàn thiện Google Business Profile cho 6 khách sạn</h3>
+      <h3>3. Tối ưu và thống nhất thông tin Google Business Profile cho 6 khách sạn</h3>
       <div class="owner">Digital · Hạn: 20/11/2026</div>
-      <p>Mỗi hồ sơ đủ thuộc tính tiện ích, giờ hoạt động của nhà hàng, bar, spa, hồ bơi, ảnh mới, phản hồi đánh giá, tên và địa chỉ khớp fact sheet. Google đã bỏ mục Hỏi đáp trên hồ sơ khách sạn, nên câu hỏi thường gặp đưa vào trang khách sạn trên website. Theo nghiên cứu Hotelrank mà <a href="https://www.prostay.com/blog/ai-search-optimization-for-hotels/" target="_blank" rel="noopener">Prostay</a> dẫn lại, 79% link khách sạn trong AI Mode dẫn về Google Business Profile (một nghiên cứu duy nhất, do đơn vị bán công cụ công bố).</p>
+      <p>Chuẩn hóa thông tin trên hồ sơ của 6 khách sạn cho khớp với website, fact sheet và OTA: tên, địa chỉ, số điện thoại, hạng phòng, tiện ích, giờ hoạt động phải giống nhau ở mọi nơi. Mỗi hồ sơ đủ thuộc tính tiện ích, giờ hoạt động của nhà hàng, bar, spa, hồ bơi, ảnh mới, phản hồi đánh giá, tên và địa chỉ khớp fact sheet. Google đã bỏ mục Hỏi đáp trên hồ sơ khách sạn, nên câu hỏi thường gặp đưa vào trang khách sạn trên website. Theo nghiên cứu Hotelrank mà <a href="https://www.prostay.com/blog/ai-search-optimization-for-hotels/" target="_blank" rel="noopener">Prostay</a> dẫn lại, 79% link khách sạn trong AI Mode dẫn về Google Business Profile (một nghiên cứu duy nhất, do đơn vị bán công cụ công bố).</p>
     </div>
     <div class="act">
       <h3>4. Chuẩn hóa cách đo lường</h3>
@@ -719,9 +719,9 @@ details.ex .ex-body{background:var(--accent-soft);padding:12px 14px;margin-top:6
   <div class="when">5.4 · GEO trên Gemini và AI Mode<small>Hai công cụ đang giảm lượt nhắc tên</small></div>
   <div>
     <div class="act">
-      <h3>11. Tạo mục Wikidata cho 6 khách sạn</h3>
+      <h3>11. Tối ưu nội dung mục Wikidata của 6 khách sạn</h3>
       <div class="owner">Digital · Hạn: 13/11/2026</div>
-      <p>Mỗi khách sạn một mục Wikidata có tên đúng, link website, địa chỉ và liên kết về mục của tập đoàn, để Google và các công cụ AI xác định đúng khách sạn là thực thể nào. Wikipedia chiếm 10,4% lượt trích dẫn ngành khách sạn; Wikidata là cách phù hợp với khách sạn chưa đủ điều kiện có trang Wikipedia riêng.</p>
+      <p>6 khách sạn đã có mục Wikidata. Rà soát và bổ sung cho đúng, đủ: tên, link website, địa chỉ và liên kết về mục của tập đoàn, để Google và các công cụ AI xác định đúng khách sạn là thực thể nào. Wikipedia chiếm 10,4% lượt trích dẫn ngành khách sạn; Wikidata là cách phù hợp với khách sạn chưa đủ điều kiện có trang Wikipedia riêng.</p>
     </div>
     <div class="act">
       <h3>12. Video cho từng khách sạn trên YouTube và mạng xã hội</h3>
@@ -849,7 +849,7 @@ details.ex .ex-body{background:var(--accent-soft);padding:12px 14px;margin-top:6
 <tr><td>Tỷ lệ AI nói đúng</td><td class="n">67% (đo trên Claude)</td><td class="n">85%</td><td class="n">90%</td><td>Kiểm tra nội bộ trên ChatGPT, Gemini, Claude</td></tr>
 <tr><td>Lượt nhắc tên tại Mỹ, tính theo % của La Siesta</td><td class="n">59% (T9)</td><td class="n">70%</td><td class="n">80%</td><td>Semrush</td></tr>
 <tr><td>Số thị trường đạt đủ 3 tiêu chí ở <a href="#nam-thi-truong">mục 3.2</a> (trong 5 thị trường có dữ liệu Semrush)</td><td class="n">1 (Úc)</td><td class="n">2</td><td class="n">3</td><td>Semrush, GA4</td></tr>
-<tr><td>Google Business Profile hoàn thiện</td><td class="n">Chưa đo</td><td class="n">6/6 khách sạn</td><td class="n">Duy trì</td><td>Rà soát nội bộ</td></tr>
+<tr><td>Google Business Profile chuẩn hóa, thống nhất thông tin</td><td class="n">Chưa đo</td><td class="n">6/6 khách sạn</td><td class="n">Duy trì</td><td>Rà soát nội bộ</td></tr>
 </tbody></table>
 </div>
 
